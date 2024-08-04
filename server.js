@@ -5,8 +5,9 @@ import connectDB from './config/db.js';
 import bodyParser from 'body-parser';
 // import Task from './models/task.js';
 import taskRoutes from './routes/guestRoutes.js'
-dotenv.config();
+import pgroutes from './routes/owner/pgInfoRoute.js'
 
+dotenv.config();
 connectDB();
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5000;
 
 app.use('/api/tasks', taskRoutes);
+app.use('/api/pg', pgroutes);
 
 app.get('/', (req, res) => {
   res.send('API is running...');
