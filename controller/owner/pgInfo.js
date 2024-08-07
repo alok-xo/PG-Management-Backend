@@ -95,7 +95,7 @@ const deletePgInfo = async (req, res) => {
             message: "PG Info Deleted Successfully",
             code: 200,
             success: true,
-            data: deletedPgInfo
+            // data: deletedPgInfo
         });
     } catch (error) {
         console.error(error);

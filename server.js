@@ -28,12 +28,12 @@ app.get('/', (req, res) => {
 
 
 app.use((req, res, next) => {
-    res.status(404).json({
-      message: "Not Found",
-      code: 404,
-      success: false,
-      error: "The requested resource was not found on this server."
-    });
+  res.status(404).json({
+    message: "Not Found",
+    code: 404,
+    success: false,
+    error: "The requested resource was not found on this server."
   });
+});
 
 app.listen(PORT, () => console.log(`server is running on ${PORT}`));
