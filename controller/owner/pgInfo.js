@@ -109,131 +109,40 @@ const deletePgInfo = async (req, res) => {
 };
 const getAllPgInfo = async (req, res) => {
     try {
-        // Extract query parameters from the request
         const { pgName, ownerName, city, state, zipCode, contactNumber, minRooms, maxRooms, roomTypes, facilities, minRent, maxRent, rules, reviewerName, rating, amenities } = req.query;
 
-        // Build the aggregation pipeline
-        let pipeline = [];
+        // Initialize the match object
+        let match = {};
 
-        if (pgName) {
-            pipeline.push({
-                $match: {
-                    pgName: { $regex: pgName, $options: 'i' }
-                }
-            });
-        }
-
-        if (ownerName) {
-            pipeline.push({
-                $match: {
-                    ownerName: { $regex: ownerName, $options: 'i' }
-                }
-            });
-        }
-
-        if (city) {
-            pipeline.push({
-                $match: {
-                    'location.city': { $regex: city, $options: 'i' }
-                }
-            });
-        }
-
-        if (state) {
-            pipeline.push({
-                $match: {
-                    'location.state': { $regex: state, $options: 'i' }
-                }
-            });
-        }
-
-        if (zipCode) {
-            pipeline.push({
-                $match: {
-                    'location.zipCode': zipCode
-                }
-            });
-        }
-
-        if (contactNumber) {
-            pipeline.push({
-                $match: {
-                    contactNumber: contactNumber
-                }
-            });
-        }
+        if (pgName) match.pgName = { $regex: pgName, $options: 'i' };
+        if (ownerName) match.ownerName = { $regex: ownerName, $options: 'i' };
+        if (city) match['location.city'] = { $regex: city, $options: 'i' };
+        if (state) match['location.state'] = { $regex: state, $options: 'i' };
+        if (zipCode) match['location.zipCode'] = zipCode;
+        if (contactNumber) match.contactNumber = contactNumber;
 
         if (minRooms || maxRooms) {
-            let roomMatch = {};
-            if (minRooms) roomMatch.$gte = Number(minRooms);
-            if (maxRooms) roomMatch.$lte = Number(maxRooms);
-
-            pipeline.push({
-                $match: {
-                    totalRooms: roomMatch
-                }
-            });
+            match.totalRooms = {};
+            if (minRooms) match.totalRooms.$gte = Number(minRooms);
+            if (maxRooms) match.totalRooms.$lte = Number(maxRooms);
         }
 
-        if (roomTypes) {
-            pipeline.push({
-                $match: {
-                    roomTypes: { $in: roomTypes.split(',') }
-                }
-            });
-        }
-
-        if (facilities) {
-            pipeline.push({
-                $match: {
-                    facilities: { $in: facilities.split(',') }
-                }
-            });
-        }
+        if (roomTypes) match.roomTypes = { $in: roomTypes.split(',') };
+        if (facilities) match.facilities = { $in: facilities.split(',') };
 
         if (minRent || maxRent) {
-            let rentMatch = {};
-            if (minRent) rentMatch.$gte = Number(minRent);
-            if (maxRent) rentMatch.$lte = Number(maxRent);
-
-            pipeline.push({
-                $match: {
-                    'rent.monthly': rentMatch
-                }
-            });
+            match['rent.monthly'] = {};
+            if (minRent) match['rent.monthly'].$gte = Number(minRent);
+            if (maxRent) match['rent.monthly'].$lte = Number(maxRent);
         }
 
-        if (rules) {
-            pipeline.push({
-                $match: {
-                    rules: { $regex: rules, $options: 'i' }
-                }
-            });
-        }
+        if (rules) match.rules = { $regex: rules, $options: 'i' };
+        if (reviewerName) match['reviews.reviewerName'] = { $regex: reviewerName, $options: 'i' };
+        if (rating) match['reviews.rating'] = Number(rating);
+        if (amenities) match.amenities = { $in: amenities.split(',') };
 
-        if (reviewerName) {
-            pipeline.push({
-                $match: {
-                    'reviews.reviewerName': { $regex: reviewerName, $options: 'i' }
-                }
-            });
-        }
-
-        if (rating) {
-            pipeline.push({
-                $match: {
-                    'reviews.rating': Number(rating)
-                }
-            });
-        }
-
-        if (amenities) {
-            pipeline.push({
-                $match: {
-                    amenities: { $in: amenities.split(',') }
-                }
-            });
-        }
+        // Build the aggregation pipeline
+        let pipeline = [{ $match: match }];
 
         // Execute the aggregation pipeline
         const pgInfos = await pgInfo.aggregate(pipeline);
@@ -255,6 +164,7 @@ const getAllPgInfo = async (req, res) => {
         });
     }
 };
+
 
 
 export { addPgInfo, updatePgInfo, deletePgInfo, getAllPgInfo }
