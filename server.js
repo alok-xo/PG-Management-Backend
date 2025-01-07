@@ -5,6 +5,7 @@ import connectDB from './config/db.js';
 import taskRoutes from './routes/guestRoutes.js';
 import pgroutes from './routes/owner/pgInfoRoute.js';
 import authRoutes from './routes/auth.js';
+import owners from './routes/admin/owners.js';
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use('/api/tasks', taskRoutes);
 app.use('/api/pg', pgroutes);
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+app.use('/owners', owners);
 
 app.get('/', (req, res) => {
   res.send('API is running...');

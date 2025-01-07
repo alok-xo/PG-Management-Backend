@@ -151,8 +151,8 @@ const getAllPgInfo = async (req, res) => {
             message: "PG Info Retrieved Successfully",
             code: 200,
             success: true,
-            data: pgInfos,
-            total: pgInfos.length // total number of PG info
+            total: pgInfos.length,
+            data: pgInfos
         });
     } catch (error) {
         console.error(error);
