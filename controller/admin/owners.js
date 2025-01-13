@@ -55,3 +55,18 @@ export const updateOwner = async (req, res) => {
     }
 }
 
+export const getOwners = async (req, res) => {
+    try {
+        const allOwnwes = await owners.find();
+        res.status(200).json({
+            message: "Fetched Owners Info Successfully",
+            code: 200,
+            success: true,
+            count:allOwnwes.length,
+            data: allOwnwes
+        })
+    } catch (error) {
+        res.status(500).json({ error: "Something went wrong" });
+        console.error(error)
+    }
+}
