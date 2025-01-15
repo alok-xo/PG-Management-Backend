@@ -62,11 +62,37 @@ export const getOwners = async (req, res) => {
             message: "Fetched Owners Info Successfully",
             code: 200,
             success: true,
-            count:allOwnwes.length,
+            count: allOwnwes.length,
             data: allOwnwes
         })
     } catch (error) {
         res.status(500).json({ error: "Something went wrong" });
         console.error(error)
+    }
+}
+
+export const deleteOwners = async (req, res) => {
+    try {
+        const deleteOwners = await owners.findByIdAndDelete(req.params.id)
+        if (!deleteOwners) {
+            return res.status(404).json({
+                message: "Owners Info Not Found",
+                code: 404,
+                success: false
+            });
+        }
+        res.status(200).json({
+            message: "Owner deleted successfully",
+            code: 200,
+            success: true
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to delete Owners Info",
+            code: 500,
+            success: false,
+            error: error.message
+        })
     }
 }
