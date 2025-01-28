@@ -1,6 +1,7 @@
 import User from '../models/user/userauth.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import auth from '../models/auth.js';
 
 export const registerUser = async (req, res) => {
     try {
@@ -112,3 +113,48 @@ export const loginUser = async (req, res) => {
     }
 };
 
+export const register = async (req, res) => {
+    try {
+        const { firstName, lastName, phone, email, designation, gender, age, password, role } = req.body;
+
+        if (!firstName, !lastName, !phone, !email, !designation, !gender, !age, !password, !role) {
+            return res.status(400).json({ error: "All required fields musb be provided." });
+        }
+
+        const existingUser = await auth.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: "Email already exists." })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new auth({
+            firstName,
+            lastName,
+            phone,
+            email,
+            designation,
+            gender,
+            age,
+            password: hashedPassword,
+            role
+        })
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: 'Registered successfully',
+            success: true,
+            code:201,
+            
+            data: newUser
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Server Error",
+            error: err.message
+        })
+    }
+}
