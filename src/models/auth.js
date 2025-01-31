@@ -23,17 +23,17 @@ const authSchema = new mongoose.Schema({
     },
     designation: {
         type: String,
-        required: true,
+        required: false,
         trim: true
     },
     gender: {
         type: String,
-        required: true,
+        required: false,
         enum: ['male', 'female', 'others']
     },
     age: {
         type: Number,
-        required: true
+        required: false
     },
     password: {
         type: String,

@@ -130,9 +130,9 @@ export const register = async (req, res) => {
                 code: 400
             })
         }
-        if (!firstName || !lastName || !phone || !email || !designation || !gender || !age || !password || !role) {
-            return res.status(400).json({ error: "All required fields must be provided." });
-        }
+        // if (!firstName || !lastName || !phone || !email || !designation || !gender || !age || !password || !role) {
+        //     return res.status(400).json({ error: "All required fields must be provided." });
+        // }
 
 
         const existingUser = await auth.findOne({ email });
