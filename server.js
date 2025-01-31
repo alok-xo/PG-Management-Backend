@@ -1,11 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';
-import taskRoutes from './routes/guestRoutes.js';
-import pgroutes from './routes/owner/pgInfoRoute.js';
-import authRoutes from './routes/auth.js';
-import owners from './routes/admin/owners.js';
+
+import taskRoutes from './src/routes/guestRoutes.js'
+import pgroutes from './src/routes/owner/pgInfoRoute.js';
+import authRoutes from './src/routes/auth.js';
+import owners from './src/routes/admin/owners.js';
+import connectDB from './src/config/db.js';
 
 dotenv.config();
 

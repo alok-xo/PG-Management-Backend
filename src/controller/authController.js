@@ -2,6 +2,8 @@ import User from '../models/user/userauth.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import auth from '../models/auth.js';
+import validation from "../utils/validation/validation.js"
+
 
 export const registerUser = async (req, res) => {
     try {
@@ -117,9 +119,21 @@ export const register = async (req, res) => {
     try {
         const { firstName, lastName, phone, email, designation, gender, age, password, role } = req.body;
 
-        if (!firstName, !lastName, !phone, !email, !designation, !gender, !age, !password, !role) {
-            return res.status(400).json({ error: "All required fields musb be provided." });
+        // const { error } = validation.registerValidation(firstName, lastName, phone, email, designation, gender, age, password, role);
+
+        const { error } = validation.registerValidation(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                messsage: error.details[0].message,
+                success: false,
+                code: 400
+            })
         }
+        if (!firstName || !lastName || !phone || !email || !designation || !gender || !age || !password || !role) {
+            return res.status(400).json({ error: "All required fields must be provided." });
+        }
+
 
         const existingUser = await auth.findOne({ email });
         if (existingUser) {
@@ -145,8 +159,8 @@ export const register = async (req, res) => {
         res.status(201).json({
             message: 'Registered successfully',
             success: true,
-            code:201,
-            
+            code: 201,
+
             data: newUser
         })
 
