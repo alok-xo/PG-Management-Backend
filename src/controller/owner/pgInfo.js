@@ -2,40 +2,11 @@ import pgInfo from "../../models/owner/pgInfoModel.js";
 
 const addPgInfo = async (req, res) => {
     try {
-        const {
-            pgName,
-            ownerName,
-            location,
-            contactNumber,
-            totalRooms,
-            availableRooms,
-            roomTypes,
-            facilities,
-            rent,
-            rules,
-            reviews,
-            images,
-            amenities
-        } = req.body;
-        console.log("saaaaaaaaaaaaaaaaaaaaaaaa");
-        const newPgInfo = new pgInfo({
-            pgName,
-            ownerName,
-            location,
-            contactNumber,
-            totalRooms,
-            availableRooms,
-            roomTypes,
-            facilities,
-            rent,
-            rules,
-            reviews,
-            images,
-            amenities
-        });
-        console.log("sssssssssssss");
+        const { pgData } = req.body;
+
+        const newPgInfo = new pgInfo(pgData);
+
         const createdPgInfo = await newPgInfo.save();
-        console.log("zzzzzzzzzzzzz", createdPgInfo);
 
         res.status(201).json({
             message: "PG Info Added Successfully",
