@@ -20,8 +20,8 @@ const registerValidation = (data) => {
             "string.empty": "Email is required",
             "string.email": "Invalid email format. Please provide a valid email address.",
         }),
-        designation: Joi.string().messages({ // Removed .valid() for free-text input
-            "string.empty": "Designation is required", // Optional: Add if designation is required
+        designation: Joi.string().messages({
+            "string.empty": "Designation is required",
         }),
         gender: Joi.string().valid("male", "female", "other").messages({
             "any.only": "Gender must be one of ['male', 'female', 'other']",
@@ -31,9 +31,25 @@ const registerValidation = (data) => {
             "string.min": "Password must be at least {#limit} characters long",
             "string.empty": "password is required",
         }),
-        role: Joi.string().valid('user', 'admin', 'manager').required()
+        role: Joi.string().valid('user', 'owner').required()
     });
 
     return schema.validate(data);
 };
-export default { registerValidation };
+
+const loginValidation = (data) => {
+    const schema = Joi.object({
+        email: Joi.string().email().required().messages({
+            "string.empty": "Email is required",
+            "string.emial": "Invalid email format. Please provide a valid email address.",
+        }),
+        password: Joi.string().min(6).required().messages({
+            "string.min": "Password must be at least {#limit} characters long",
+            "string.empty": "password is required",
+        }),
+    })
+
+    return schema.validate(data);
+};
+
+export default { registerValidation, loginValidation };
