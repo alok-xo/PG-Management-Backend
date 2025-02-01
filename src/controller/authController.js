@@ -5,93 +5,7 @@ import auth from '../models/auth.js';
 import validation from "../utils/validation/validation.js"
 import AppError from '../utils/error/error.js';
 import { StatusCodes } from 'http-status-codes';
-
-// export const registerUser = async (req, res) => {
-//     try {
-//         const { name, email, phone, password } = req.body;
-
-//         const existingUser = await User.findOne({ email });
-//         if (existingUser) {
-//             return res.status(400).json({ message: "User already exists" });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         const newUser = new User({
-//             name,
-//             email,
-//             phone,
-//             password: hashedPassword,
-//             role: 'user'  // Role is set to user
-//         });
-
-//         await newUser.save();
-
-//         const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-//         res.status(201).json({ message: "User registered successfully", data: newUser, token });
-//     } catch (error) {
-//         res.status(500).json({ message: "Server Error", error: error.message });
-//     }
-// };
-
-// export const registerAdmin = async (req, res) => {
-//     try {
-//         const { name, email, phone, password } = req.body;
-
-//         const existingAdmin = await User.findOne({ email });
-//         if (existingAdmin) {
-//             return res.status(400).json({ message: "Admin already exists" });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         const newAdmin = new User({
-//             name,
-//             email,
-//             phone,
-//             password: hashedPassword,
-//             role: 'admin'
-//         });
-
-//         await newAdmin.save();
-
-//         const token = jwt.sign({ id: newAdmin._id, role: newAdmin.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-//         res.status(201).json({ message: "Admin registered successfully", data: newAdmin, token });
-//     } catch (error) {
-//         res.status(500).json({ message: "Server Error", error: error.message });
-//     }
-// };
-
-// export const registerManager = async (req, res) => {
-//     try {
-//         const { name, email, phone, password } = req.body;
-
-//         const existingManager = await User.findOne({ email });
-//         if (existingManager) {
-//             return res.status(400).json({ message: "Manager already exists" });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         const newManager = new User({
-//             name,
-//             email,
-//             phone,
-//             password: hashedPassword,
-//             role: 'manager'
-//         });
-
-//         await newManager.save();
-
-//         const token = jwt.sign({ id: newManager._id, role: newManager.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-//         res.status(201).json({ message: "Manager registered successfully", data: newManager, token });
-//     } catch (error) {
-//         res.status(500).json({ message: "Server Error", error: error.message });
-//     }
-// };
+import Logger from '../utils/logger/logger.js';
 
 
 export const loginUser = async (req, res) => {
@@ -144,8 +58,19 @@ export const loginUser = async (req, res) => {
             accessToken: accessToken,
             refreshToken: refreshToken
         });
-    } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error", error: error.message });
+    } catch (err) {
+        Logger.error(err.message);
+        let statusCode = 500;
+        let message = "Internal Server Error";
+        if (err instanceof AppError) {
+            statusCode = err.statusCode;
+            message = err.message;
+        }
+        return res.status(statusCode).json({
+            message,
+            success: false,
+            code: statusCode
+        });
     }
 };
 
@@ -206,7 +131,7 @@ export const register = async (req, res) => {
         });
 
     } catch (err) {
-        console.error('error', err);
+        Logger.error(err.message);
         let statusCode = 500;
         let message = "Internal Server Error";
         if (err instanceof AppError) {
