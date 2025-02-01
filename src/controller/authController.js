@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import auth from '../models/auth.js';
 import validation from "../utils/validation/validation.js"
 import AppError from '../utils/error/error.js';
+import { StatusCodes } from 'http-status-codes';
 
 // export const registerUser = async (req, res) => {
 //     try {
@@ -100,7 +101,7 @@ export const loginUser = async (req, res) => {
         const { error } = validation.loginValidation(req.body);
 
         if (error) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 messsage: error.details[0].message,
                 success: false,
                 code: 400
@@ -115,13 +116,13 @@ export const loginUser = async (req, res) => {
         }
 
         if (!user) {
-            return res.status(400).json({ message: "User does not exist" });
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "User does not exist" });
         }
 
         const isMatch = await bcrypt.compare(password.trim(), user.password);
 
         if (!isMatch) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Email or password are incorrect",
                 success: false,
                 code: 400,
@@ -134,15 +135,17 @@ export const loginUser = async (req, res) => {
 
         const refreshToken = jwt.sign(payload, secret, { expiresIn: '5d' });
 
-        res.status(200).json({
+        res.status(StatusCodes.OK).json({
             message: "Login successful",
+            code: 200,
+            success: true,
             data: user,
             role: user.role,
             accessToken: accessToken,
             refreshToken: refreshToken
         });
     } catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -153,7 +156,7 @@ export const register = async (req, res) => {
         const { error } = validation.registerValidation(req.body);
 
         if (error) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 messsage: error.details[0].message,
                 success: false,
                 code: 400
@@ -164,14 +167,14 @@ export const register = async (req, res) => {
 
         if (existingUser) {
             if (existingUser.email === email) {
-                return res.status(400).json({
+                return res.status(StatusCodes.BAD_REQUEST).json({
                     error: "Email already exists",
                     success: false,
                     code: 400
                 })
             }
             if (existingUser.phone === phone) {
-                return res.status(400).json({
+                return res.status(StatusCodes.BAD_REQUEST).json({
                     error: "Phone already exists",
                     success: false,
                     code: 400
@@ -195,7 +198,7 @@ export const register = async (req, res) => {
 
         await newUser.save();
 
-        res.status(201).json({
+        res.status(StatusCodes.CREATED).json({
             message: 'Registered successfully',
             success: true,
             code: 201,
