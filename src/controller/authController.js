@@ -50,7 +50,7 @@ export const loginUser = async (req, res) => {
         const refreshToken = jwt.sign(payload, secret, { expiresIn: '5d' });
 
         res.status(StatusCodes.OK).json({
-            message: "Login successful",
+            message: "You're logged in! Ready to explore!!",
             code: 200,
             success: true,
             data: user,
