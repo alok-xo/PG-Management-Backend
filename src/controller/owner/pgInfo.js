@@ -1,4 +1,5 @@
 import pgInfo from "../../models/owner/pgInfoModel.js";
+import mongoose from "mongoose";
 
 const addPgInfo = async (req, res) => {
     try {
@@ -25,9 +26,67 @@ const addPgInfo = async (req, res) => {
     }
 };
 
+// const updatePgInfo = async (req, res) => {
+//     try {
+//         const updatedPgInfo = await pgInfo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//         if (!updatedPgInfo) {
+//             return res.status(404).json({
+//                 message: "PG Info Not Found",
+//                 code: 404,
+//                 success: false
+//             });
+//         }
+//         res.status(200).json({
+//             message: "PG Info Updated Successfully",
+//             code: 200,
+//             success: true,
+//             data: updatedPgInfo
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             message: "Failed to Update PG Info",
+//             code: 500,
+//             success: false,
+//             error: error.message
+//         });
+//     }
+// };
+
+
 const updatePgInfo = async (req, res) => {
     try {
-        const updatedPgInfo = await pgInfo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { id } = req.params;
+
+        // Validate MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid PG ID",
+                code: 400,
+                success: false
+            });
+        }
+
+        // Extract pgData from request body
+        const { pgData } = req.body;
+
+        if (!pgData || Object.keys(pgData).length === 0) {
+            return res.status(400).json({
+                message: "No update data provided",
+                code: 400,
+                success: false
+            });
+        }
+
+        console.log("Update Data:", pgData); // Debugging
+
+        // Update PG Info
+        const updatedPgInfo = await pgInfo.findByIdAndUpdate(
+            id,
+            { $set: pgData }, // Using $set to update only specified fields
+            { new: true, runValidators: true }
+        );
+
         if (!updatedPgInfo) {
             return res.status(404).json({
                 message: "PG Info Not Found",
@@ -35,6 +94,7 @@ const updatePgInfo = async (req, res) => {
                 success: false
             });
         }
+
         res.status(200).json({
             message: "PG Info Updated Successfully",
             code: 200,
@@ -51,6 +111,8 @@ const updatePgInfo = async (req, res) => {
         });
     }
 };
+
+
 
 const deletePgInfo = async (req, res) => {
     try {

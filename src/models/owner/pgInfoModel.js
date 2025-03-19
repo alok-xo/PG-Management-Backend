@@ -19,6 +19,7 @@ const bookingSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+//db design for owner. owner will create this and it will be visible to user 
 const pgInfoSchema = new mongoose.Schema(
     {
         pgName: { type: String, required: true },
